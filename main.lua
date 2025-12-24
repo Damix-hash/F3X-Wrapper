@@ -1,5 +1,5 @@
 local Player = game.Players.LocalPlayer
-local serverEndpoint = Player.Character:FindFirstChild("ServerEndpoint", true) or Player:FindFirstChild("ServerEndpoint", true)
+local serverEndpoint = Player.Character:WaitForChild("F3X"):FindFirstChildOfClass('BindableFunction'):FindFirstChildOfClass("RemoteFunction")
 local classNames = {Part = "Normal", TrussPart = "Truss", WedgePart = "Wedge", CornerWedgePart = "Corner", SpawnLocation = "Spawn"}
 local defaultProperties = {}
 local defaultPart = Instance.new("Part")
