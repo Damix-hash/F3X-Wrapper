@@ -8,15 +8,12 @@ local validPartProperties = {"Color", "Material", "Reflectance", "Transparency",
 local validTextureProperties = {Decal = {"Face", "Texture", "Transparency"}, Texture = {"Face", "Texture", "Transparency", "StudsPerTileU", "StudsPerTileV"}}
 local validDecorationProperties = {Smoke = {"Color", "Opacity", "Size", "RiseVelocity"}, Fire = {"Color", "SecondaryColor", "Heat", "Size"}, Sparkles = {"SparkleColor"}}
 local validLightingProperties = {SpotLight = {"Color", "Range", "Brightness", "Angle", "Face", "Shadows"}, PointLight = {"Color", "Range", "Brightness", "Shadows"}, SurfaceLight = {"Color", "Range", "Brightness", "Angle", "Face", "Shadows"}}
-
 for _,property in pairs(validPartProperties) do
     defaultProperties[property] = defaultPart[property]
 end
 defaultProperties.Parent = workspace
 defaultPart:Destroy()
-
 local F3X = {}
-
 function F3X.Object(object)
     local properties = {}
     if object:IsA("BasePart") then
@@ -47,13 +44,11 @@ function F3X.Object(object)
         function proxy:Remove() serverEndpoint:InvokeServer("Remove", {object}) end
         return proxy, object
     end
-    
     for property,value in pairs(properties) do
         object:GetPropertyChangedSignal(property):Connect(function()
             properties[property] = object[property]
         end)
     end
-    
     local proxy = newproxy(true)
     local meta = getmetatable(proxy)
     meta.__index = properties
@@ -64,67 +59,20 @@ function F3X.Object(object)
         F3X.Edit(object, edited)
     end
     proxy.Object = object
-    
     if object:IsA("BasePart") then
-        function proxy:AddMesh() 
-            local mesh = serverEndpoint:InvokeServer("CreateMeshes", {{Part = object}})[1] 
-            return F3X.Object(mesh) 
-        end
-        function proxy:AddDecal() 
-            local decal = serverEndpoint:InvokeServer("CreateTextures", {{Part = object, Face = Enum.NormalId.Front, TextureType = "Decal"}})[1] 
-            return F3X.Object(decal) 
-        end
-        function proxy:AddTexture() 
-            local texture = serverEndpoint:InvokeServer("CreateTextures", {{Part = object, Face = Enum.NormalId.Front, TextureType = "Texture"}})[1] 
-            return F3X.Object(texture) 
-        end
-        function proxy:AddSmoke() 
-            local smoke = serverEndpoint:InvokeServer("CreateDecorations", {{Part = object, DecorationType = "Smoke"}})[1] 
-            return F3X.Object(smoke) 
-        end
-        function proxy:AddFire() 
-            local fire = serverEndpoint:InvokeServer("CreateDecorations", {{Part = object, DecorationType = "Fire"}})[1] 
-            return F3X.Object(fire) 
-        end
-        function proxy:AddSparkles() 
-            local sparkles = serverEndpoint:InvokeServer("CreateDecorations", {{Part = object, DecorationType = "Sparkles"}})[1] 
-            return F3X.Object(sparkles) 
-        end
-        function proxy:AddSpotLight() 
-            local spotlight = serverEndpoint:InvokeServer("CreateLights", {{Part = object, LightType = "SpotLight"}})[1] 
-            return F3X.Object(spotlight) 
-        end
-        function proxy:AddPointLight() 
-            local pointlight = serverEndpoint:InvokeServer("CreateLights", {{Part = object, LightType = "PointLight"}})[1] 
-            return F3X.Object(pointlight) 
-        end
-        function proxy:AddSurfaceLight() 
-            -- FIX: Variable name was 'pointlight' but returned 'surfacelight' (undefined)
-            local surfacelight = serverEndpoint:InvokeServer("CreateLights", {{Part = object, LightType = "SurfaceLight"}})[1] 
-            return F3X.Object(surfacelight) 
-        end
-        function proxy:WeldTo(parts) 
-            if type(parts) ~= "table" then parts = {parts} end 
-            serverEndpoint:InvokeServer("CreateWelds", parts, object) 
-        end
-        function proxy:MakeJoints() 
-            local parts = {} 
-            for _,part in pairs(object:GetTouchingParts()) do 
-                table.insert(parts, part) 
-            end 
-            serverEndpoint:InvokeServer("CreateWelds", parts, object) 
-        end
-        function proxy:BreakJoints() 
-            local welds = {} 
-            for _,weld in pairs(workspace:GetDescendants()) do 
-                if weld:IsA("Weld") and (weld.Part0 == object or weld.Part1 == object) then 
-                    table.insert(welds, weld) 
-                end 
-            end 
-            serverEndpoint:InvokeServer("RemoveWelds", welds, object) 
-        end
+        function proxy:AddMesh() local mesh = serverEndpoint:InvokeServer("CreateMeshes", {{Part = object}})[1] return F3X.Object(mesh) end
+        function proxy:AddDecal() local decal = serverEndpoint:InvokeServer("CreateTextures", {{Part = object, Face = Enum.NormalId.Front, TextureType = "Decal"}})[1] return F3X.Object(decal) end
+        function proxy:AddTexture() local texture = serverEndpoint:InvokeServer("CreateTextures", {{Part = object, Face = Enum.NormalId.Front, TextureType = "Texture"}})[1] return F3X.Object(texture) end
+        function proxy:AddSmoke() local smoke = serverEndpoint:InvokeServer("CreateDecorations", {{Part = object, DecorationType = "Smoke"}})[1] return F3X.Object(smoke) end
+        function proxy:AddFire() local fire = serverEndpoint:InvokeServer("CreateDecorations", {{Part = object, DecorationType = "Fire"}})[1] return F3X.Object(fire) end
+        function proxy:AddSparkles() local sparkles = serverEndpoint:InvokeServer("CreateDecorations", {{Part = object, DecorationType = "Sparkles"}})[1] return F3X.Object(sparkles) end
+        function proxy:AddSpotLight() local spotlight = serverEndpoint:InvokeServer("CreateLights", {{Part = object, LightType = "SpotLight"}})[1] return F3X.Object(spotlight) end
+        function proxy:AddPointLight() local pointlight = serverEndpoint:InvokeServer("CreateLights", {{Part = object, LightType = "PointLight"}})[1] return F3X.Object(pointlight) end
+        function proxy:AddSurfaceLight() local surfacelight = serverEndpoint:InvokeServer("CreateLights", {{Part = object, LightType = "surfacelight"}})[1] return F3X.Object(surfacelight) end
+        function proxy:WeldTo(parts) if type(parts) ~= "table" then parts = {parts} end serverEndpoint:InvokeServer("CreateWelds", parts, object) end
+        function proxy:MakeJoints() local parts = {} for _,part in pairs(object:GetTouchingParts()) do table.insert(parts, part) end serverEndpoint:InvokeServer("CreateWelds", parts, object) end
+        function proxy:BreakJoints() local welds = {} for _,weld in pairs(workspace:GetDescendants()) do if weld:IsA("Weld") and (weld.Part0 == object or weld.Part1 == object) then table.insert(welds, weld) end end serverEndpoint:InvokeServer("RemoveWelds", welds, object) end
     end
-    
     function proxy:Destroy() serverEndpoint:InvokeServer("Remove", {object}) end
     function proxy:Remove() serverEndpoint:InvokeServer("Remove", {object}) end
     return proxy, object
@@ -134,28 +82,17 @@ function F3X.Edit(objects, properties)
     if type(objects) ~= "table" then
         objects = {objects}
     end
-    
     for _,object in pairs(objects) do
-        task.spawn(function()
+        spawn(function()
             if object:IsA("BasePart") then
-                if properties.Anchored ~= nil then
-                    coroutine.wrap(serverEndpoint.InvokeServer)(serverEndpoint, "SyncAnchor", {{Part = object, Anchored = properties.Anchored}})
-                end
-                
+                coroutine.wrap(serverEndpoint.InvokeServer)(serverEndpoint, "SyncAnchor", {{Part = object, Anchored = properties.Anchored}})
                 for property,value in pairs(properties) do
-                    if property == "BrickColor" then 
-                        property = "Color" 
-                        properties[property] = value.Color 
-                    end
-                    if property == "Position" then 
-                        property = "CFrame" 
-                        properties[property] = CFrame.new(value) 
-                    end
-                    
+                    if property == "BrickColor" then property = "Color" properties[property] = value.Color end
+                    if property == "Position" then property = "CFrame" properties[property] = CFrame.new(value) end
                     local sync
                     if property == "Material" or property == "Transparency" or property == "Reflectance" then
                         sync = "SyncMaterial"
-                    elseif property:sub(-7) == "Surface" then
+                    elseif property:sub(property:len() - 6) == "Surface" then
                         sync = "SyncSurface"
                         property = property:gsub("Surface", "")
                     elseif property == "Color" then
@@ -171,25 +108,22 @@ function F3X.Edit(objects, properties)
                     elseif property == "Parent" then
                         sync = "SetParent"
                     end
-                    
                     local propertyTable = {Part = object}
                     if sync == "SyncSurface" then
                         propertyTable["Surfaces"] = {}
                         propertyTable["Surfaces"][property] = value
-                        coroutine.wrap(serverEndpoint.InvokeServer)(serverEndpoint, sync, {propertyTable})
                     elseif sync == "SetName" or sync == "SetParent" then
                         coroutine.wrap(serverEndpoint.InvokeServer)(serverEndpoint, sync, {object}, value)
-                    elseif sync == "SyncShape" then
+                    elseif property == "SyncShape" then
                         local mesh = F3X.Object(object):AddMesh()
                         local meshType
                         if property.Name == "Ball" then meshType = "Sphere" end
                         mesh.MeshType = Enum.MeshType[property.Name]
-                    elseif sync then
+                    else
                         propertyTable[property] = value
-                        coroutine.wrap(serverEndpoint.InvokeServer)(serverEndpoint, sync, {propertyTable})
                     end
+                    coroutine.wrap(serverEndpoint.InvokeServer)(serverEndpoint, sync, {propertyTable})
                 end
-                
                 if properties.CFrame ~= nil then
                     coroutine.wrap(serverEndpoint.InvokeServer)(serverEndpoint, "SyncMove", {{Part = object, CFrame = properties.CFrame}})
                 end
@@ -219,12 +153,10 @@ function F3X.new(className, parent)
             className = f3xname
         end
     end
-    
     local properties = {}
     for property,value in pairs(defaultProperties) do
         properties[property] = value
     end
-    
     local object = serverEndpoint:InvokeServer("CreatePart", className, CFrame.new(), parent)
     F3X.Edit(object, defaultProperties)
     return F3X.Object(object)
