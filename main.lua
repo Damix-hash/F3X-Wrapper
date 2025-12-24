@@ -1,5 +1,5 @@
 local Player = game.Players.LocalPlayer
-local serverEndpoint = Player.Character:WaitForChild("F3X"):FindFirstChildOfClass('BindableFunction'):FindFirstChildOfClass("RemoteFunction")
+local serverEndpoint = Player.Character:FindFirstChild("ServerEndpoint", true) or Player:FindFirstChild("ServerEndpoint", true)
 local classNames = {Part = "Normal", TrussPart = "Truss", WedgePart = "Wedge", CornerWedgePart = "Corner", SpawnLocation = "Spawn"}
 local defaultProperties = {}
 local defaultPart = Instance.new("Part")
@@ -68,7 +68,7 @@ function F3X.Object(object)
         function proxy:AddSparkles() local sparkles = serverEndpoint:InvokeServer("CreateDecorations", {{Part = object, DecorationType = "Sparkles"}})[1] return F3X.Object(sparkles) end
         function proxy:AddSpotLight() local spotlight = serverEndpoint:InvokeServer("CreateLights", {{Part = object, LightType = "SpotLight"}})[1] return F3X.Object(spotlight) end
         function proxy:AddPointLight() local pointlight = serverEndpoint:InvokeServer("CreateLights", {{Part = object, LightType = "PointLight"}})[1] return F3X.Object(pointlight) end
-        function proxy:AddSurfaceLight() local surfacelight = serverEndpoint:InvokeServer("CreateLights", {{Part = object, LightType = "surfacelight"}})[1] return F3X.Object(surfacelight) end
+        function proxy:AddSurfaceLight() local pointlight = serverEndpoint:InvokeServer("CreateLights", {{Part = object, LightType = "surfacelight"}})[1] return F3X.Object(surfacelight) end
         function proxy:WeldTo(parts) if type(parts) ~= "table" then parts = {parts} end serverEndpoint:InvokeServer("CreateWelds", parts, object) end
         function proxy:MakeJoints() local parts = {} for _,part in pairs(object:GetTouchingParts()) do table.insert(parts, part) end serverEndpoint:InvokeServer("CreateWelds", parts, object) end
         function proxy:BreakJoints() local welds = {} for _,weld in pairs(workspace:GetDescendants()) do if weld:IsA("Weld") and (weld.Part0 == object or weld.Part1 == object) then table.insert(welds, weld) end end serverEndpoint:InvokeServer("RemoveWelds", welds, object) end
